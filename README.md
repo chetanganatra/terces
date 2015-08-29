@@ -2,7 +2,7 @@
 ======
 
 Mobile app for Password Management using Ionic Framework
-===
+==
 
 An app to provide Secure and Simple way to store and access your login credentials. 
 
