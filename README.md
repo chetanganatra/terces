@@ -1,4 +1,5 @@
 <img src="https://github.com/chetanganatra/terces/blob/master/www/img/icon.png" width=70> terces 
+======
 
 Mobile app for Password Management using Ionic Framework
 ====
