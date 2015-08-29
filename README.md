@@ -7,7 +7,7 @@ An app to provide Secure and Simple way to store and access your login credentia
 
 The app does not utilize any network connection nor does provide any export option to ensure data and app is not compromised even in any adverse situations. Enjoy your peaceful and reliable password store wherever you want and the way you want. 
 
-<img src="https://github.com/chetanganatra/terces/blob/master/www/img/Usage.png" width=600>
+<img src="https://github.com/chetanganatra/terces/blob/master/www/img/Usage.png" width=700>
 
 ***FEEDBACK***
 
@@ -15,10 +15,10 @@ The app does not utilize any network connection nor does provide any export opti
 
 **Installation / Dependencies**
 --
-* [NodeJS] - v0.12.7 (https://nodejs.org/)
-* [Ionic] - v1.6.0 (http://ionicframework.com/)
+* [NodeJS] (https://nodejs.org/) - v0.12.7
+* [Ionic] (http://ionicframework.com/) - v1.6.0
 * Cordova Plugins 
-	- [SQLite Plugin] - v0.7.10 (https://github.com/litehelpers/Cordova-sqlite-storage)
+	- [SQLite Plugin](https://github.com/litehelpers/Cordova-sqlite-storage) - v0.7.10 
 
 **License**
 --
