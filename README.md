@@ -1,7 +1,7 @@
 <img src="https://github.com/chetanganatra/terces/blob/master/www/img/icon.png" width=40> terces 
 ======
 
-Mobile app for Password Management using Ionic Framework
+Mobile app for Password Management using Ionic
 ==
 
 An app to provide Secure and Simple way to store and access your login credentials. 
