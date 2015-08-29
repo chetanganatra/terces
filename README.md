@@ -1,5 +1,5 @@
-![](www/img/icon.png "terces")
-https://github.com/chetanganatra/terces/blob/master/www/img/icon.png
+<img src="https://github.com/chetanganatra/terces/blob/master/www/img/icon.png" width=10>
+
 terces - Hybrid mobile app for Password Management
 ====
 
