@@ -7,7 +7,7 @@ An app to provide Secure and Simple way to store and access your login credentia
 
 The app does not utilize any network connection nor does provide any export option to ensure data and app is not compromised even in any adverse situations. Enjoy your peaceful and reliable password store wherever you want and the way you want. 
 
-<img src="https://github.com/chetanganatra/terces/blob/master/www/img/Usage.png" width=250>
+<img src="https://github.com/chetanganatra/terces/blob/master/www/img/Usage.png" width=450>
 
 ***FEEDBACK***
 
