@@ -1,11 +1,13 @@
-<img src="https://github.com/chetanganatra/terces/blob/master/www/img/icon.png" width=80>
+<img src="https://github.com/chetanganatra/terces/blob/master/www/img/icon.png" width=70> terces 
 
-terces - Hybrid mobile app for Password Management
+Mobile app for Password Management using Ionic Framework
 ====
 
 An app to provide Secure and Simple way to store and access your login credentials. 
 
 The app does not utilize any network connection nor does provide any export option to ensure data and app is not compromised even in any adverse situations. Enjoy your peaceful and reliable password store wherever you want and the way you want. 
+
+Build it yourself for your favorite platforms - Android, Apple or Microsoft!
 
 <img src="https://github.com/chetanganatra/terces/blob/master/www/img/Usage.png" width=700>
 
