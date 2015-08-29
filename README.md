@@ -1,4 +1,4 @@
-<img src="https://github.com/chetanganatra/terces/blob/master/www/img/icon.png" width=10>
+<img src="https://github.com/chetanganatra/terces/blob/master/www/img/icon.png" width=80>
 
 terces - Hybrid mobile app for Password Management
 ====
