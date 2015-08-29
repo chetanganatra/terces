@@ -1,4 +1,4 @@
-<img src="https://github.com/chetanganatra/terces/blob/master/www/img/icon.png" width=70> terces 
+<img src="https://github.com/chetanganatra/terces/blob/master/www/img/icon.png" width=55> terces 
 ======
 
 Mobile app for Password Management using Ionic Framework
