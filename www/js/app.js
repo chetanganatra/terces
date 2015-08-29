@@ -234,9 +234,11 @@ angular.module('mkb', ['ionic', 'ngCordova'])
 			});
 			return false;
 		}
-		if (decodedText == "646576616775687961")
-			return true else
-				return false
+		if (decodedText == "646576616775687961") {
+			return true 
+		} else {
+		return false 
+		}
 	};
 
 	$scope.passSubmit = function (currPassword) {
