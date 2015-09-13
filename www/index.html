@@ -22,6 +22,7 @@
 		.img-circle { border-radius: 50%; cursor: pointer; }
 		.img-circle:hover { background: #808080;}
 		.cust_pane {background: black;}
+		.changed {  background-color: rgb(252, 202, 202);}
 	</style>
 	<!-- .img-circle { border-radius: 50%; width: 65px; height: 65px; background: #777; margin: 10px 0; cursor: pointer; float: right; } -->
   </head>
@@ -39,8 +40,8 @@
 				</ion-nav-buttons>
 
 				<ion-nav-buttons side="right">
-				  <img src="img/icwhite.png" style="width:26px; height:26px; margin-right:3px; margin-top:3px;" ng-click="logout()"></img>
-				  <button class="button button-icon button-clear ion-ios-plus-empty" ng-click="addMKB()"></button>
+				  <button class="button button-icon button-clear ion-ios-plus-empty" ng-click="addMKB()" style="margin-right:10px;"></button>				  
+				  <img src="img/icwhite.png" style="width:26px; height:26px; margin-right:3px; margin-top:3px;" ng-click="logout()"></img>				  
 				</ion-nav-buttons>
 			  </ion-nav-bar>
 			  <ion-nav-view animation="slide-left-right"></ion-nav-view>
@@ -74,6 +75,9 @@
 				  <li>
 					<a class="item" menu-close href="#/deleteall" ng-click="deleteAllConfirm()">&nbsp;&nbsp;Delete All</a>
 				  </li>
+				  <li>
+					<a class="item" menu-close nav-clear ng-click="setTypes()">&nbsp;&nbsp;Change Types</a>
+				  </li>
 				  <li class="item item-divider">
 					<b>Settings</b>
 				  </li>
@@ -100,6 +104,7 @@
 				  <li>
 					<a class="item" menu-close nav-clear ng-click="setPass()">Reset PIN</a>
 				  </li>
+
 				  <li>
 					<a class="item" menu-close href="#/about" item-height="15px">About</a>
 				  </li>
@@ -273,6 +278,10 @@
 					 <i class="icon ion-ios-paper-outline" ng-show="pwd.type == 'NOTE'"></i>  		 
 					 <i class="icon ion-earth" ng-show="pwd.type == 'WEB'"></i>		
 					 <i class="icon ion-ios-cart-outline" ng-show="pwd.type == 'RET'"></i>	 
+					 <i class="icon ion-ios-football" ng-show="pwd.type == 'C01'"></i>	 
+					 <i class="icon ion-android-bar" ng-show="pwd.type == 'C02'"></i>	 
+					 <i class="icon ion-ios-home" ng-show="pwd.type == 'C03'"></i>	 
+					 <i class="icon ion-link" ng-show="pwd.type == 'C04'"></i>	 
 						&nbsp;&nbsp;{{pwd.title}}  
 					 <ion-option-button class="ion-edit" ng-click="editMKB(pwd.id)"></ion-option-button>				 
 				</ion-item> 
@@ -295,13 +304,8 @@
 			<div class="list list-inset">
 			   <label class="item item-input item-select">
 					<div class="input-label">Type</div>
-					<select ng-model="mkbItem.Type">
-					  <option value="SYS" selected>Computer</option>
-					  <option value="EML" >Email</option>
-					  <option value="ATM" >ATM</option>
-					  <option value="RET" >Shopping</option>
-					  <option value="WEB" >Website / Forum</option>
-					  <option value="NOTE" >Note</option>
+					<select id="typeOfPass" ng-model="mkbItem.Type">
+						<option ng-repeat="option in passTypes | filter: {displayValue: '!Custom'}: true" value="{{option.typeCode}}">{{option.displayValue}}</option> 
 					</select>
 			  </label>
 			  <label ng-show="mkbItem.Type!='EML' && mkbItem.Type!='ATM'" class="item item-input">
@@ -371,7 +375,7 @@
 			</div>
 			</div>
 			<div class="padding">
-			  <button ng-click="cancelModalPass()" ng-show="passFound" class="button button-dark activated">Cancel</button>
+			  <button ng-click="cancelPassModal()" ng-show="passFound" class="button button-dark activated">Cancel</button>
 			  <button ng-click="savePass()" ng-show="passFound" class="button button-dark activated" style="float: right">Save</button>
 			  <button ng-click="savePass()" ng-show="!passFound" class="button button-full button-dark activated" style="float: right">Save</button>
 			</div>
@@ -405,6 +409,31 @@
 		  </ion-content>
 		</ion-view>
   </script> 	
+  
+  <script id="types.html" type="text/ng-template">
+		<ion-view  hide-nav-bar="true">
+		  <ion-header-bar class="bar-dark">
+			<h1 class="title">Password Types</h1> 
+		  </ion-header-bar>
+		  <ion-content overflow-scroll="false">		  
+		  <form name="typeForm">
+			<ion-list>						
+				 <ion-item ng-repeat="pType in passTypes"  class="item-icon-left item-icon-right">
+					 <ng-form name="innerForm">
+						<i class="icon" ng-class=pType.ico></i>
+						<input type="text" name="typeIn" ng-model="pType.displayValue" value="{{pType.displayValue}}">
+						<i class="icon ion-ios-checkmark-empty" ng-show="innerForm.typeIn.$dirty" ng-click="updateName(pType.id, pType.displayValue)"></i> 				 	
+					</ng-form>
+				</ion-item>				 
+			</ion-list>		 
+			</form>
+			<div class="padding">
+			  <button ng-click="removeTypesScreen()" class="button button-dark button-full activated">Back</button>
+			</div>			
+		  </ion-content>
+		</ion-view>
+  </script> 	
+  
 
 </body>
 </html>

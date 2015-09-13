@@ -3,6 +3,8 @@
 
 
 var mkbdb;
+var devInBrowser = false;		// true if dev & testing in Browser
+				  
 
 angular.module('mkb', ['ionic', 'ngCordova'])
 .run(function ($ionicPlatform, $cordovaSQLite) {
@@ -10,10 +12,11 @@ angular.module('mkb', ['ionic', 'ngCordova'])
 		if (window.StatusBar) {
 			StatusBar.styleDefault();
 		}
-		mkbdb = $cordovaSQLite.openDB({
-				name : "mkb.db",
-				location : 0
-			});
+		if(devInBrowser){
+			mkbdb = window.openDatabase("mkb.db", "1.0", "Dev Database", 10000);
+		} else {
+			mkbdb = $cordovaSQLite.openDB({name : "mkb.db", location : 0 });
+		}
 		$cordovaSQLite.execute(mkbdb, 'CREATE TABLE IF NOT EXISTS terces (id INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT)');
 	});
 })
@@ -91,6 +94,43 @@ angular.module('mkb', ['ionic', 'ngCordova'])
 	$scope.graceTime = 10000;
 	$scope.graceCompleted = true;
 
+	var mPassTypes = JSON.parse(localStorage.getItem("passTypes"));
+	
+	if(!mPassTypes){
+		$scope.passTypes = [
+			{ id: 1, typeCode: "SYS", displayValue: "Computer", ico: "ion-monitor" },		
+			{ id: 2, typeCode: "EML", displayValue: "Email", ico: "ion-ios-email-outline" },  
+			{ id: 3, typeCode: "ATM", displayValue: "ATM", ico: "ion-card" },  
+			{ id: 4, typeCode: "RET", displayValue: "Shopping", ico: "ion-ios-cart-outline" },  
+			{ id: 5, typeCode: "WEB", displayValue: "WebSite/Forum", ico: "ion-earth" },  
+			{ id: 6, typeCode: "NOTE", displayValue: "Note", ico: "ion-ios-paper-outline" },
+			{ id: 7, typeCode: "C01", displayValue: "Custom", ico: "ion-ios-football" },
+			{ id: 8, typeCode: "C02", displayValue: "Custom", ico: "ion-android-bar" },
+			{ id: 9, typeCode: "C03", displayValue: "Custom", ico: "ion-ios-home" },
+			{ id: 10, typeCode: "C04", displayValue: "Custom", ico: "ion-link" }
+		];									 
+		localStorage.setItem("passTypes", JSON.stringify($scope.passTypes));
+	} else {
+		$scope.passTypes = mPassTypes;
+	}		
+	
+	
+	$scope.updateName = function(currId, newName){
+		console.log(currId+" "+newName);
+		for(var i=0; i<$scope.passTypes.length; i++){
+			if($scope.passTypes.id==currId)
+				$scope.passTypes.displayValue = newName;
+		}
+		localStorage.setItem("passTypes", JSON.stringify($scope.passTypes));
+	    $scope.removeTypesScreen();
+	}
+	
+	// var tmpHtml = "";
+	// for(var i=0; i<passTypes.length; i++){
+		// tmpHtml += "<option value='"+passTypes[i].typeCode+"' >"+passTypes[i].displayValue+"</option>";
+	// }
+	// typeOfPass
+	
 	var localSettings = JSON.parse(localStorage.getItem("localSettings"));
 	var terces = localStorage.getItem("terces");
 	if (!localSettings) {
@@ -301,7 +341,7 @@ angular.module('mkb', ['ionic', 'ngCordova'])
 		$scope.modalPass.show();
 	}
 
-	$scope.cancelModal = function () {
+	$scope.cancelPassModal = function () {
 		$scope.modalPass.hide();
 	}
 
@@ -311,6 +351,21 @@ angular.module('mkb', ['ionic', 'ngCordova'])
 		});
 	}
 
+	$ionicModal.fromTemplateUrl('types.html', {
+		scope : $scope,
+		animation : 'slide-in-up'
+	}).then(function (modal) {
+		$scope.modalTypes = modal;
+	});
+
+	$scope.setTypes = function () {
+		$scope.modalTypes.show();
+	}
+
+	$scope.removeTypesScreen = function () {
+		$scope.modalTypes.hide();
+	}
+	
 	$scope.addMKB = function () {
 		$scope.mkbItem = {};
 		$scope.mkbItem.Cat = "PUB";
@@ -346,7 +401,7 @@ angular.module('mkb', ['ionic', 'ngCordova'])
 	$scope.cancelModal = function () {
 		$scope.modal.hide();
 	}
-
+	
 	$scope.tabSelected = function (tab) {
 		$scope.tabCat = tab;
 		if (tab == 'PER') {
@@ -435,9 +490,11 @@ angular.module('mkb', ['ionic', 'ngCordova'])
 		});
 	};
 
-	$scope.addUpdateMKBitem = function () {
-		if (!$scope.userAuth)
+	$scope.addUpdateMKBitem = function () {		
+		if (!$scope.userAuth) {
+			$scope.showFlashMsgLong("Authorization required!");
 			return;
+		}
 		if ((!$scope.mkbItem.Title) || $scope.mkbItem.Title == "") {
 			$scope.showFlashMsgLong("Please provide title !");
 			return;
