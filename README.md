@@ -10,7 +10,15 @@ The app does not utilize any network connection nor does provide any export opti
 
 Build it yourself for your favorite platforms - Android, Apple or Microsoft!
 
+Download and start using it from Google Play Store
+
+https://play.google.com/store/apps/details?id=com.chetanganatra.terces
+
+
+
 <img src="https://github.com/chetanganatra/terces/blob/master/www/img/Usage.png" width=700>
+
+
 
 ***FEEDBACK***
 
