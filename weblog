@@ -1,0 +1,344 @@
+Script started on Tue 14 Mar 2017 01:25:14 PM UTC
+
+root@instance-1:/home/chetan_ganatra# curl -lv http://23.251.132.83
+
+* Rebuilt URL to: http://23.251.132.83/
+* Hostname was NOT found in DNS cache
+*   Trying 23.251.132.83...
+* connect to 23.251.132.83 port 80 failed: Connection refused
+* Failed to connect to 23.251.132.83 port 80: Connection refused
+* Closing connection 0
+curl: (7) Failed to connect to 23.251.132.83 port 80: Connection refused
+
+
+root@instance-1:/home/chetan_ganatra# curl -lv http://127.0.0.1
+* Rebuilt URL to: http://127.0.0.1/
+* Hostname was NOT found in DNS cache
+*   Trying 127.0.0.1...
+* Connected to 127.0.0.1 (127.0.0.1) port 80 (#0)
+> GET / HTTP/1.1
+
+> User-Agent: curl/7.38.0
+
+> Host: 127.0.0.1
+
+> Accept: */*
+
+> 
+
+< HTTP/1.1 200 OK
+
+< X-Powered-By: Express
+
+< Accept-Ranges: bytes
+
+< Cache-Control: public, max-age=0
+
+< Last-Modified: Sun, 23 Oct 2016 17:39:57 GMT
+
+< ETag: W/"1c27-157f2a0a5c8"
+
+< Content-Type: text/html; charset=UTF-8
+
+< Content-Length: 7207
+
+< Date: Tue, 14 Mar 2017 13:26:05 GMT
+
+< Connection: keep-alive
+
+< 
+
+<!DOCTYPE html>
+<html lang="en-gb" dir="ltr">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Document Analyzer</title>
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="apple-touch-icon-precomposed" href="images/apple-touch-icon.png">
+        <link rel="stylesheet" href="css/uikit-cust1.css" />
+		<link rel="stylesheet" href="css/components/autocomplete.css" />
+		<link rel="stylesheet" href="css/components/upload.css" />
+        <script src="js/jquery-2.1.4.min.js"></script>
+        <script src="js/uikit.js"></script>
+        <script src="js/components/upload.js"></script>
+    </head>
+
+    <body>
+        <div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
+            <nav class="uk-navbar uk-margin-large-bottom">
+                <a class="uk-navbar-brand uk-hidden-small" href="">DocKM</a>
+                <ul class="uk-navbar-nav uk-hidden-small">
+                    <li class="uk-active">
+                        <a href="">File Analyzer</a>
+                    </li>
+                    <li>
+                        <a href="">Analytics</a>
+                    </li>
+                </ul>
+                <a href="#offcanvas" class="uk-navbar-toggle uk-visible-small data-uk-offcanvas"></a>
+                <div class="uk-navbar-brand uk-navbar-center uk-visible-small">File Analyzer</div>
+            </nav>
+
+            <div class="uk-grid" data-uk-grid-margin>
+                <div class="uk-width-medium-1-1">
+                   <div class="uk-vertical-align uk-text-center" style="background:#FAFAFA;">
+                        <div class="uk-vertical-align-middle uk-width-1-2">
+                            <p></p>						
+						<div id="upload-drop" class="uk-form uk-placeholder uk-text-center">							
+                                <i class="uk-icon-cloud-upload uk-icon-medium uk-text-muted uk-margin-small-right"></i> Attach files by dropping them here or <a class="uk-form-file">selecting one
+										<input id="upload-select" type="file" name="sfile">									
+								</a>
+                        </div>																			
+
+                    </div>									
+                </div>  										
+				<div id="progressbar" class="uk-progress uk-progress-danger  uk-hidden uk-progress-striped uk-active">
+					<div class="uk-progress-bar" style="width: 100%;">Uploading</div>
+				</div>
+				<div id="processBar" class="uk-progress uk-progress-striped uk-active uk-hidden">
+						<div class="uk-progress-bar" style="width: 100%;">Processing</div>
+				</div>					
+				<div class="uk-block uk-overflow-container">
+					<table id="faTable" class="uk-table-striped uk-overflow-container" style="width=100%;"></table>
+				</div>	
+				<div id="summaryText" class="uk-panel uk-panel-header uk-hidden">
+                     <h3 class="uk-panel-title">Summary</h3>
+                     <div id="sumTxt"></div>
+                </div>
+<!-- 				<div id="freqTM" class="uk-grid uk-hidden">
+					<div class="uk-width-medium-1-2 uk-panel-box">
+						<h3 class="uk-panel-title">Top Keywords</h3>
+						<div id="freq" class="uk-panel"></div>
+					</div>
+					<div class="uk-width-medium-1-2  uk-panel-box">
+						<h3 class="uk-panel-title">Topics</h3>
+						<div id="tm" class="uk-panel"></div>
+					</div>
+				</div> -->
+			</div>
+            <div class="uk-grid data-uk-grid-margin" style="width:100%;">
+                <div class="uk-width-medium-1-1">
+                    <div class="uk-panel uk-panel-box uk-text-center">
+                        <p><strong>(C) 2015. Chetan Ganatra.</strong> File Analyzer & Summarizer. CG </p>
+                    </div>
+                </div>
+            </div> 
+
+        
+        </div>
+
+	
+	
+	<script type="text/javascript">	
+	    var faURL = '/fa';
+			
+	   $(document).ready(function() {		
+         progressbar = $("#progressbar"),
+            bar         = progressbar.find('.uk-progress-bar'),
+            settings    = {
+
+            action: faURL, // upload url
+			enctype: "multipart/form-data",
+			param: "sfile",
+
+          //  allow : '*.(jpg|jpeg|gif|png)', // allow only images
+
+            loadstart: function() {
+                //bar.css("width", "10%").text("10%");
+                progressbar.removeClass("uk-hidden");
+				$("#faTable").html("");
+				$("#sumTxt").html("");
+            },
+
+            progress: function(percent) {
+                percent = Math.ceil(percent);
+                //bar.css("width", percent+"%").text(percent+"%");
+				if(percent >= 99) {
+					progressbar.addClass("uk-hidden");
+					$("#processBar").removeClass("uk-hidden");
+				 }
+            },
+
+            allcomplete: function(response) {
+
+                bar.css("width", "100%").text("File Uploaded");
+
+                setTimeout(function(){
+                    progressbar.addClass("uk-hidden");
+					$("#processBar").addClass("uk-hidden");
+                }, 250);
+				console.log(response);
+				buildHtmlTable('#faTable',response);
+            }
+        };
+
+        var select = UIkit.uploadSelect($("#upload-select"), settings),
+            drop   = UIkit.uploadDrop($("#upload-drop"), settings);
+    });
+	
+	
+	function buildHtmlTable(selector,faResponse){
+		$(selector).append("<tr><td><strong>Property</strong></td><td><strong>Value</strong></td></tr>");
+		try{
+			var results = JSON.parse(faResponse);
+			var valu = "";
+			if(results['summary']){
+				$("#summaryText").removeClass("uk-hidden");
+				$("#sumTxt").html(results['summary']);
+				delete results['summary'];
+			} 
+			if(results['wordFreqListString']){
+				$(selector).append("<tr><td>KeyWords</td><td>"+results['wordFreqListString']+"</td></tr>");
+				//$("#freqTM").removeClass("uk-hidden");
+				//$("#freq").html(results['wordFreqListString']);
+				delete results['wordFreqListString'];
+			}
+			if(results['topicModels']){
+				var tops = results['topicModels'];
+				var topicsList = "";
+				for(var tp = 0; tp < tops.length; tp++){
+					var currObj = tops[tp];
+					var topic_str = (tp+1)+". ";
+					for (var key in currObj) {
+					     topic_str += key + " ";					   
+					}
+					topicsList += topic_str + "<br>";
+				}
+				$(selector).append("<tr><td>Topics</td><td>"+topicsList+"</td></tr>");
+				//$("#freqTM").removeClass("uk-hidden");
+				//$("#tm").html(JSON.stringify(results['topicModels']));
+				//delete results['topicModels'];
+			}			
+			for (var property in results) {
+			if (results.hasOwnProperty(property)) {
+					if(typeof(results[property]) == "object") 
+						{valu = JSON.stringify(results[property]);
+					} else 	{
+						valu = results[property];
+					}
+					$(selector).append("<tr><td>"+property+"</td><td>"+valu+"</td></tr>");
+				} // EndPropIf
+			} // EndFor
+		}
+		catch (e) {
+			alert("Unable to analyze file: "+e);
+		}				
+	}		
+
+	function showFilename()	{
+			var fID = document.getElementById('choosenFile');			
+			fID.innerHTML = document.getElementById('inputFile').value.replace("C:\\fakepath\\", "");
+			progressbar.removeClass("uk-hidden");
+			//document.forms["fileUploadForm"].submit();			
+			UIkit.uploadSelect($("#inputFile"), settings)
+		}		
+
+	</script>
+	    
+</body>
+</html>
+* Connection #0 to host 127.0.0.1 left intact
+
+
+root@instance-1:/home/chetan_ganatra# netstat -antlp
+
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      413/sshd        
+tcp        0      0 127.0.0.1:80            0.0.0.0:*               LISTEN      491/nodejs      
+tcp        0      0 10.132.0.2:48861        169.254.169.254:80      ESTABLISHED 417/python      
+tcp        0    464 10.132.0.2:22           173.194.93.35:35984     ESTABLISHED 3141/sshd: chetan_g
+tcp        0      0 10.132.0.2:48853        169.254.169.254:80      CLOSE_WAIT  416/python      
+tcp        0      0 127.0.0.1:47428         127.0.0.1:80            TIME_WAIT   -               
+tcp        0      0 10.132.0.2:48858        169.254.169.254:80      ESTABLISHED 415/python      
+tcp        0      0 10.132.0.2:48857        169.254.169.254:80      ESTABLISHED 416/python      
+tcp6       0      0 :::22                   :::*                    LISTEN      413/sshd        
+tcp6       0      0 127.0.0.1:9998          :::*                    LISTEN      462/java        
+
+
+root@instance-1:/home/chetan_ganatra# iptables -L -v
+Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+ 
+root@instance-1:/home/chetan_ganatra# tcpdump port 80 -n 
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+13:27:19.625878 IP 169.254.169.254.80 > 10.132.0.2.48862: Flags [P.], seq 2165595182:2165595454, ack 2870128909, win 65535, length 272: HTTP: HTTP/1.1 200 OK
+13:27:19.625941 IP 10.132.0.2.48862 > 169.254.169.254.80: Flags [.], ack 272, win 28944, length 0
+13:27:19.625956 IP 169.254.169.254.80 > 10.132.0.2.48862: Flags [F.], seq 272, ack 1, win 65535, length 0
+13:27:19.626334 IP 10.132.0.2.48857 > 169.254.169.254.80: Flags [F.], seq 482396604, ack 3565750631, win 28944, length 0
+13:27:19.626415 IP 169.254.169.254.80 > 10.132.0.2.48857: Flags [.], ack 1, win 65535, length 0
+13:27:19.627014 IP 10.132.0.2.48867 > 169.254.169.254.80: Flags [S], seq 1467571356, win 28400, options [mss 1420,sackOK,TS val 24354439 ecr 0,nop,wscale 7], length 0
+13:27:19.627313 IP 169.254.169.254.80 > 10.132.0.2.48867: Flags [S.], seq 393516628, ack 1467571357, win 65535, options [mss 1420,eol], length 0
+13:27:19.627335 IP 10.132.0.2.48867 > 169.254.169.254.80: Flags [.], ack 1, win 28400, length 0
+13:27:19.627478 IP 10.132.0.2.48867 > 169.254.169.254.80: Flags [P.], seq 1:294, ack 1, win 28400, length 293: HTTP: GET /computeMetadata/v1/instance/virtual-clock/drift-token?timeout_sec=60&last_etag=c6a7bbfe995acc98&alt=json&recursive=False&wait_for_change=True HTTP/1.1
+13:27:19.627619 IP 169.254.169.254.80 > 10.132.0.2.48867: Flags [.], ack 294, win 65242, length 0
+13:27:19.627627 IP 169.254.169.254.80 > 10.132.0.2.48867: Flags [.], ack 294, win 65535, length 0
+13:27:19.664633 IP 10.132.0.2.48862 > 169.254.169.254.80: Flags [.], ack 273, win 28944, length 0
+13:27:22.089871 IP 169.254.169.254.80 > 10.132.0.2.48861: Flags [P.], seq 4262280453:4262283313, ack 516693353, win 65535, length 2860: HTTP: HTTP/1.1 200 OK
+13:27:22.089926 IP 10.132.0.2.48861 > 169.254.169.254.80: Flags [.], ack 2860, win 34080, length 0
+13:27:22.089953 IP 169.254.169.254.80 > 10.132.0.2.48861: Flags [F.], seq 2860, ack 1, win 65535, length 0
+13:27:22.090466 IP 10.132.0.2.48861 > 169.254.169.254.80: Flags [F.], seq 1, ack 2861, win 34080, length 0
+13:27:22.090574 IP 169.254.169.254.80 > 10.132.0.2.48861: Flags [.], ack 2, win 65535, length 0
+13:27:22.092859 IP 10.132.0.2.48868 > 169.254.169.254.80: Flags [S], seq 2412932456, win 28400, options [mss 1420,sackOK,TS val 24355056 ecr 0,nop,wscale 7], length 0
+13:27:22.093235 IP 169.254.169.254.80 > 10.132.0.2.48868: Flags [S.], seq 597285999, ack 2412932457, win 65535, options [mss 1420,eol], length 0
+13:27:22.093258 IP 10.132.0.2.48868 > 169.254.169.254.80: Flags [.], ack 1, win 28400, length 0
+13:27:22.093368 IP 10.132.0.2.48868 > 169.254.169.254.80: Flags [P.], seq 1:259, ack 1, win 28400, length 258: HTTP: GET /computeMetadata/v1/?timeout_sec=69&last_etag=f86f1b11b744207a&alt=json&recursive=True&wait_for_change=True HTTP/1.1
+13:27:22.093456 IP 169.254.169.254.80 > 10.132.0.2.48868: Flags [.], ack 259, win 65277, length 0
+13:27:22.093516 IP 169.254.169.254.80 > 10.132.0.2.48868: Flags [.], ack 259, win 65535, length 0
+13:27:35.463447 IP 223.186.164.129.9305 > 10.132.0.2.80: Flags [S], seq 1242468281, win 27400, options [mss 1370,nop,wscale 5,nop,nop,sackOK,nop,nop,TS val 20341845 ecr 0], length 0
+13:27:35.463494 IP 10.132.0.2.80 > 223.186.164.129.9305: Flags [R.], seq 0, ack 1242468282, win 0, length 0
+13:27:35.710034 IP 223.186.164.129.9306 > 10.132.0.2.80: Flags [S], seq 3157454356, win 27400, options [mss 1370,nop,wscale 5,nop,nop,sackOK,nop,nop,TS val 20341870 ecr 0], length 0
+13:27:35.710090 IP 10.132.0.2.80 > 223.186.164.129.9306: Flags [R.], seq 0, ack 3157454357, win 0, length 0
+13:27:36.709581 IP 223.186.164.129.9311 > 10.132.0.2.80: Flags [S], seq 642284318, win 27400, options [mss 1370,nop,wscale 5,nop,nop,sackOK,nop,nop,TS val 20341968 ecr 0], length 0
+13:27:36.709615 IP 10.132.0.2.80 > 223.186.164.129.9311: Flags [R.], seq 0, ack 642284319, win 0, length 0
+13:27:36.946288 IP 223.186.164.129.9312 > 10.132.0.2.80: Flags [S], seq 2115744549, win 27400, options [mss 1370,nop,wscale 5,nop,nop,sackOK,nop,nop,TS val 20341993 ecr 0], length 0
+13:27:36.946336 IP 10.132.0.2.80 > 223.186.164.129.9312: Flags [R.], seq 0, ack 2115744550, win 0, length 0
+13:27:40.119555 IP 223.186.164.129.9321 > 10.132.0.2.80: Flags [S], seq 3333941941, win 27400, options [mss 1370,nop,wscale 5,nop,nop,sackOK,nop,nop,TS val 20342309 ecr 0], length 0
+13:27:40.119643 IP 10.132.0.2.80 > 223.186.164.129.9321: Flags [R.], seq 0, ack 3333941942, win 0, length 0
+13:27:40.363799 IP 223.186.164.129.9328 > 10.132.0.2.80: Flags [S], seq 3441745441, win 27400, options [mss 1370,nop,wscale 5,nop,nop,sackOK,nop,nop,TS val 20342335 ecr 0], length 0
+13:27:40.363852 IP 10.132.0.2.80 > 223.186.164.129.9328: Flags [R.], seq 0, ack 3441745442, win 0, length 0
+13:27:46.569287 IP 223.186.164.129.9335 > 10.132.0.2.80: Flags [S], seq 1700655138, win 27400, options [mss 1370,nop,wscale 4,nop,nop,sackOK,nop,nop,TS val 20342922 ecr 0], length 0
+13:27:46.569355 IP 10.132.0.2.80 > 223.186.164.129.9335: Flags [R.], seq 0, ack 1700655139, win 0, length 0
+13:27:46.881804 IP 223.186.164.129.9336 > 10.132.0.2.80: Flags [S], seq 1111393243, win 27400, options [mss 1370,nop,wscale 4,nop,nop,sackOK,nop,nop,TS val 20342947 ecr 0], length 0
+13:27:46.881865 IP 10.132.0.2.80 > 223.186.164.129.9336: Flags [R.], seq 0, ack 1111393244, win 0, length 0
+13:27:48.420433 IP 223.186.164.129.9337 > 10.132.0.2.80: Flags [S], seq 3561398386, win 27400, options [mss 1370,nop,wscale 4,nop,nop,sackOK,nop,nop,TS val 20343110 ecr 0], length 0
+13:27:48.420485 IP 10.132.0.2.80 > 223.186.164.129.9337: Flags [R.], seq 0, ack 3561398387, win 0, length 0
+13:27:48.546397 IP 223.186.164.129.9338 > 10.132.0.2.80: Flags [S], seq 2754964101, win 27400, options [mss 1370,nop,wscale 4,nop,nop,sackOK,nop,nop,TS val 20343135 ecr 0], length 0
+13:27:48.546462 IP 10.132.0.2.80 > 223.186.164.129.9338: Flags [R.], seq 0, ack 2754964102, win 0, length 0
+13:27:52.136150 IP 169.254.169.254.80 > 10.132.0.2.48863: Flags [P.], seq 1504087400:1504087875, ack 1525640514, win 65535, length 475: HTTP: HTTP/1.1 200 OK
+13:27:52.136202 IP 10.132.0.2.48863 > 169.254.169.254.80: Flags [.], ack 475, win 28944, length 0
+13:27:52.136215 IP 169.254.169.254.80 > 10.132.0.2.48863: Flags [F.], seq 475, ack 1, win 65535, length 0
+13:27:52.136798 IP 10.132.0.2.48863 > 169.254.169.254.80: Flags [F.], seq 1, ack 476, win 28944, length 0
+13:27:52.136915 IP 169.254.169.254.80 > 10.132.0.2.48863: Flags [.], ack 2, win 65535, length 0
+13:27:52.140511 IP 10.132.0.2.48869 > 169.254.169.254.80: Flags [S], seq 3881262240, win 28400, options [mss 1420,sackOK,TS val 24362567 ecr 0,nop,wscale 7], length 0
+13:27:52.140885 IP 169.254.169.254.80 > 10.132.0.2.48869: Flags [S.], seq 2440974353, ack 3881262241, win 65535, options [mss 1420,eol], length 0
+13:27:52.140906 IP 10.132.0.2.48869 > 169.254.169.254.80: Flags [.], ack 1, win 28400, length 0
+13:27:52.141002 IP 10.132.0.2.48869 > 169.254.169.254.80: Flags [P.], seq 1:287, ack 1, win 28400, length 286: HTTP: GET /computeMetadata/v1/instance/network-interfaces/?timeout_sec=68&last_etag=edd79aff6158794e&alt=json&recursive=True&wait_for_change=True HTTP/1.1
+13:27:52.141064 IP 169.254.169.254.80 > 10.132.0.2.48869: Flags [.], ack 287, win 65249, length 0
+13:27:52.141100 IP 169.254.169.254.80 > 10.132.0.2.48869: Flags [.], ack 287, win 65535, length 0
+13:27:58.724650 IP 223.186.164.129.9341 > 10.132.0.2.80: Flags [S], seq 955795095, win 27400, options [mss 1370,nop,wscale 4,nop,nop,sackOK,nop,nop,TS val 20344149 ecr 0], length 0
+13:27:58.724720 IP 10.132.0.2.80 > 223.186.164.129.9341: Flags [R.], seq 0, ack 955795096, win 0, length 0
+13:27:58.969500 IP 223.186.164.129.9342 > 10.132.0.2.80: Flags [S], seq 114017471, win 27400, options [mss 1370,nop,wscale 4,nop,nop,sackOK,nop,nop,TS val 20344174 ecr 0], length 0
+13:27:58.969561 IP 10.132.0.2.80 > 223.186.164.129.9342: Flags [R.], seq 0, ack 114017472, win 0, length 0
+13:28:04.158496 IP 223.186.164.129.9343 > 10.132.0.2.80: Flags [S], seq 3514149711, win 27400, options [mss 1370,nop,wscale 4,nop,nop,sackOK,nop,nop,TS val 20344690 ecr 0], length 0
+13:28:04.158543 IP 10.132.0.2.80 > 223.186.164.129.9343: Flags [R.], seq 0, ack 3514149712, win 0, length 0
+13:28:04.419756 IP 223.186.164.129.9344 > 10.132.0.2.80: Flags [S], seq 1781608463, win 27400, options [mss 1370,nop,wscale 4,nop,nop,sackOK,nop,nop,TS val 20344715 ecr 0], length 0
+13:28:04.419821 IP 10.132.0.2.80 > 223.186.164.129.9344: Flags [R.], seq 0, ack 1781608464, win 0, length 0
+^C
+62 packets captured
+62 packets received by filter
+0 packets dropped by kernel
+root@instance-1:/home/chetan_ganatra# exit
+exit
+
+Script done on Tue 14 Mar 2017 01:28:10 PM UTC
